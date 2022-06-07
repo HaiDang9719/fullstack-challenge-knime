@@ -1,0 +1,38 @@
+version: '3'
+services:
+  fullstack-backend:
+    build: .
+    env_file:
+      - app/config.env
+    environment:
+      - ES_HOST=fullstackes01
+    ports:
+      - "7200:7200"
+    volumes: 
+      - ./app:/app/app
+    command: ["./wait-for-it.sh", "fullstackes01:9200", "-s", "-t", "180", "--", "python", "manage.py", "run"]
+
+  fullstackes01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    container_name: fullstackes01
+    environment:
+      - node.name=fullstackes01
+      - discovery.type=single-node
+      - cluster.name=es-docker-cluster
+      - gateway.auto_import_dangling_indices=true
+      - bootstrap.memory_lock=false
+      - "ES_JAVA_OPTS=-Xms1000m -Xmx2000m"
+    volumes:
+      - ./static:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+  fullstackkib01:
+    image: docker.elastic.co/kibana/kibana:7.11.1
+    container_name: fullstackkib01
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://fullstackes01:9200
+      ELASTICSEARCH_HOSTS: '["http://fullstackes01:9200"]'
+  

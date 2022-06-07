@@ -1,0 +1,5 @@
+__pycache__/
+.vscode/
+.DS_Store
+backend/app/logs/celery.log
+backend/static/nodes/
