@@ -16,4 +16,4 @@
 -  Delete function: Use the delete button in each node. Click to remove the node from the database. 
 
 
-
+![UI](./imgs/interface.png "API UI")
