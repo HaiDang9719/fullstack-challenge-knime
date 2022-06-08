@@ -1,11 +1,37 @@
-<form class="example-form">
-  <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Assignee</mat-label>
-    <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
-    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-        {{option.name}}dasdasd
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-</form>
+<div *ngIf="allOptions$ | async">
+  <div style="height: 30vh">
+    <div style="padding-top: 20px">
+      <form class="example-form">
+        <mat-form-field class="example-full-width" style="width: 95%" appearance="fill">
+          <mat-label>Search nodes by names/tags</mat-label>
+          <input type="text" matInput [(ngModel)]="searchValue" name="searchForm" (ngModelChange)="onInputChange()" >
+        </mat-form-field>
+        <button mat-icon-button color="primary" aria-label="Rename node" (click)="addNewNode()">
+          <mat-icon>add</mat-icon>
+        </button>
+      </form>
+    </div>
+    <div>
+      <form class="example-form-hidden">
+        <mat-form-field class="example-full-width" appearance="none" style="">
+          <mat-label style="display: none">Search nodes by names/tags</mat-label>
+          <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto" name="hiddenSearchForm"
+                 (ngModelChange)="onTriggerAutoPanel()"  #autoTrigger="matAutocompleteTrigger" style="display: none">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of filteredOptionsObservable | async" [value]="option" (click)="onSearchTrigger(option)">
+              {{optionTags.includes(option) ? 'tag: ' + option : option}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+      </form>
+    </div>
+
+  </div>
+  <div style="height: 60vh; overflow-y: auto; overflow-x: hidden">
+    <div *ngFor="let option of filteredOptions$ | async" style="margin-top: 30px">
+      <app-node-cell [infoNode]="option" (cModelChange)="modifyNode($event, option)"></app-node-cell>
+    </div>
+  </div>
+</div>
+

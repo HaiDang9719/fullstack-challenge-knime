@@ -142,27 +142,6 @@ class ESConnection(object):
         except Exception as ex:
             print(str(ex))
     
-    def get_chat_record_from_index_by_id(self, record_id, es_index):
-        try:
-            if not self._conn.indices.exists(es_index):
-                self._conn.indices.create(index=es_index)
-                print('Created Index {}.'.format(es_index))
-            query = {
-                "query": {
-                "terms": {
-                  "_id": [record_id]
-                }
-            }
-            }
-            s = Search(using=self._conn, index=es_index, doc_type=self._doc_type)
-            s.update_from_dict(query)
-            response = s.execute()
-            if len(response.hits) < 1 :
-                return None
-            return response.hits[0].to_dict()['value']
-
-        except Exception as ex:
-            print(str(ex))
     
     
     def get_record_from_index_by_list_of_ids(self, record_id, es_index):
@@ -212,7 +191,7 @@ class ESConnection(object):
         except Exception as ex:
             print(str(ex))
 
-    def get_all_records_from_index_by_id(self, es_index):
+    def get_all_records_from_index(self, es_index):
         try:
             if not self._conn.indices.exists(es_index):
                 self._conn.indices.create(index=es_index)
@@ -234,25 +213,51 @@ class ESConnection(object):
         except Exception as ex:
             print(str(ex))
     
-    def get_all_records_from_index_by_id2(self, es_index):
+    def get_record_from_index_by_search_string_in_name(self, search_value, es_index):
         try:
             if not self._conn.indices.exists(es_index):
                 self._conn.indices.create(index=es_index)
                 print('Created Index {}.'.format(es_index))
             query = {
                 "query": {
-                    "match_all": {}
-                }
+                    "query_string": {
+                        "default_field" : "value.name",
+                        "query" : "*"+search_value+"*"
+                    }
+            }
             }
             s = Search(using=self._conn, index=es_index, doc_type=self._doc_type)
             s.update_from_dict(query)
             result = []
             for hit in s.scan():
                 return_obj = hit.to_dict()['value']
-                # return_obj['record_id'] = hit.meta.id
-                
+                return_obj['record_id'] = hit.meta.id
                 result.append(return_obj)
-            
+            return result
+
+        except Exception as ex:
+            print(str(ex))
+    
+    def get_record_from_index_by_search_string_in_tag(self, search_value, es_index):
+        try:
+            if not self._conn.indices.exists(es_index):
+                self._conn.indices.create(index=es_index)
+                print('Created Index {}.'.format(es_index))
+            query = {
+                "query": {
+                    "query_string": {
+                        "default_field" : "value.tag",
+                        "query" : "*"+search_value+"*"
+                    }
+            }
+            }
+            s = Search(using=self._conn, index=es_index, doc_type=self._doc_type)
+            s.update_from_dict(query)
+            result = []
+            for hit in s.scan():
+                return_obj = hit.to_dict()['value']
+                return_obj['record_id'] = hit.meta.id
+                result.append(return_obj)
             return result
 
         except Exception as ex:
@@ -284,31 +289,6 @@ class ESConnection(object):
             print(str(ex))
             print('Wrong in get record by userKey')
     
-    def get_record_by_sampleKey(self, sampleKey, es_index):
-        try:
-            if not self._conn.indices.exists(es_index):
-                self._conn.indices.create(index=es_index)
-                print('Created Index {}.'.format(es_index))
-            query = {
-                "query": {
-                "match_phrase": {
-                  "sampleKey": sampleKey
-                }
-            }
-            }
-            s = Search(using=self._conn, index=es_index, doc_type=self._doc_type)
-            s.update_from_dict(query)
-            result = []
-            for hit in s.scan():
-                return_obj = hit.to_dict()
-                return_obj['record_id'] = hit.meta.id
-                result.append(return_obj)
-            return result
-
-        except Exception as ex:
-            print(str(ex))
-            print('Wrong in get record by userKey')
-
     
     def get_record_by_userKey_and_inferenceMode_and_ModelID(self, userKey, inferenceMode, es_index, activeModelID):
         try:
@@ -338,91 +318,6 @@ class ESConnection(object):
         except Exception as ex:
             print(str(ex))
             print('Wrong in get record by userKey')
-    
-    def get_record_by_userKey_and_ModelID(self, userKey, es_index, activeModelID):
-        try:
-            if not self._conn.indices.exists(es_index):
-                self._conn.indices.create(index=es_index)
-                print('Created Index {}.'.format(es_index))
-            query = {
-                "query": {
-                    "bool": {
-                        "must": 
-                            [
-                                {"match_phrase": {"userKey":  userKey}},
-                                {"match_phrase": {"baseModelID":  activeModelID}}
-                            ]
-                        }
-                 }
-            }
-            s = Search(using=self._conn, index=es_index, doc_type=self._doc_type)
-            s.update_from_dict(query)
-            result = []
-            for hit in s.scan():
-                return_obj = hit.to_dict()
-                return_obj['record_id'] = hit.meta.id
-                result.append(return_obj)
-            return result
-        except Exception as ex:
-            print(str(ex))
-            print('Wrong in get record by userKey')
-    
-    def get_record_by_userKey_and_inferenceMode(self, userKey, inferenceMode, es_index):
-        try:
-            if not self._conn.indices.exists(es_index):
-                self._conn.indices.create(index=es_index)
-                print('Created Index {}.'.format(es_index))
-            query = {
-                "query": {
-                    "bool": {
-                        "must": 
-                            [
-                                {"match_phrase": {"userKey":  userKey}},
-                                {"match_phrase": {"inferenceMode":  inferenceMode}}
-                            ]
-                        }
-                 }
-            }
-            s = Search(using=self._conn, index=es_index, doc_type=self._doc_type)
-            s.update_from_dict(query)
-            result = []
-            for hit in s.scan():
-                return_obj = hit.to_dict()
-                return_obj['record_id'] = hit.meta.id
-                result.append(return_obj)
-            return result
-        except Exception as ex:
-            print(str(ex))
-            print('Wrong in get record by userKey')
-    
-
-    def get_record_by_userKey_and_modelName(self, userKey, modelName, es_index):
-        try:
-            if not self._conn.indices.exists(es_index):
-                self._conn.indices.create(index=es_index)
-                print('Created Index {}.'.format(es_index))
-            query = {
-                "query": {
-                    "bool": {
-                        "must": 
-                            [
-                                {"match_phrase": {"userKey":  userKey}},
-                                {"match_phrase": {"modelName":  modelName}}
-                            ]
-                        }
-                 }
-            }
-            s = Search(using=self._conn, index=es_index, doc_type=self._doc_type)
-            s.update_from_dict(query)
-            result = []
-            for hit in s.scan():
-                return_obj = hit.to_dict()
-                return_obj['record_id'] = hit.meta.id
-                result.append(return_obj)
-            return result
-        except Exception as ex:
-            print('Wrong in get_record_by_fileName_and_modelName: ', str(ex))
-            return []
 
 
     def get_record_by_id(self, record_id):
@@ -502,49 +397,7 @@ class ESConnection(object):
             print(str(ex))
             print('Wrong in delete record by userKey')
     
-    def delete_record_by_sampleKey(self, sampleKey, es_index):
-        try:
-            if not self._conn.indices.exists(es_index):
-                self._conn.indices.create(index=es_index)
-                print('Created Index {}.'.format(es_index))
-            query = {
-                "query": {
-                "match_phrase": {
-                  "sampleKey": sampleKey
-                }
-            }
-            }
-            s = Search(using=self._conn, index=es_index, doc_type=self._doc_type, wait_for_completion=True)
-            s.update_from_dict(query)
-            s.delete()
-
-        except Exception as ex:
-            print(str(ex))
-            print('Wrong in delete record by sampleKey')
-    # def bulk_storing(self, df):
-    #     """
-    #     Stores a data frame in elasticsearch within the index and document type as specified in the connection.
-    #     :param df: A pandas df containing at least a properly formatted column "timestamp" and "value".
-    #     """
-
-    #     df['_index'] = self._index
-    #     df['_type'] = self._doc_type
-    #     df['_id'] = df['id']
-
-    #     sending_df_json = df_to_dict(df)
-    #     try:
-    #         result = helpers.bulk(self._conn, sending_df_json,
-    #                               max_retries=3,
-    #                               initial_backoff=2,
-    #                               max_backoff=60,
-    #                               chunk_size=1000,
-    #                               request_timeout=200)
-    #     except Exception as ex:
-    #         print('Error in indexing data.')
-    #         print(str(ex))
-    #         sys.exit(1)
-    #     print('Result of bulk storing: {}.'.format(result))
-
+    
 class CachingESConnection(ESConnection):
 
     def __init__(self,

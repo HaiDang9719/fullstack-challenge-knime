@@ -34,6 +34,7 @@
     "hammerjs": "^2.0.8",
     "lodash-es": "latest",
     "map.prototype.tojson": "^0.1.3",
+    "material-design-icons": "^3.0.1",
     "ngx-color-picker": "^9.0.0",
     "npm": "^6.14.15",
     "prettier": "^2.0.5",

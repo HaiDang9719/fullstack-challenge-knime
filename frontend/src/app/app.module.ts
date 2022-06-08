@@ -10,13 +10,24 @@ import { FormsModule } from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {MatIconModule} from "@angular/material/icon";
+import { NodeCellComponent } from './node-cell/node-cell.component';
+import {MatGridListModule} from "@angular/material/grid-list";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {LoaderInterceptor} from "./services/loader.interceptor";
+import {MatCardModule} from "@angular/material/card";
+import { EditNodeDialogComponent } from './dialogs/edit-node-dialog/edit-node-dialog.component';
+import {MatDialogModule} from "@angular/material/dialog";
 @NgModule({
   declarations: [
     AppComponent,
-    SearchBarComponent
+    SearchBarComponent,
+    NodeCellComponent,
+    EditNodeDialogComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     MatFormFieldModule,
@@ -24,9 +35,16 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     MatInputModule,
     ReactiveFormsModule,
     FormsModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule,
+    MatGridListModule,
+    MatCardModule,
+    MatDialogModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    EditNodeDialogComponent,
+    ]
 })
 export class AppModule { }

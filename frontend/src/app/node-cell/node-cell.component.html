@@ -1,0 +1,29 @@
+<mat-card class="cell-info-node" *ngIf="infoNode">
+  <mat-grid-list cols=7 rowHeight="100%">
+    <mat-grid-tile [colspan]="2" style=" width: 100%">
+      <div style="height: 100%; width: 95%">
+        <div style="font-size: 13px">{{infoNode.group}}</div>
+        <div style="font-size: 16px; padding-top: 5px; padding-bottom: 5px"><b>{{infoNode.name}}</b></div>
+        <div class="tag-name-cell" *ngFor="let tagName of splitName(infoNode.tag)">
+          {{tagName}}
+        </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile [colspan]="4" style="width: 100%">
+      <div style="height: 100%; width: 95%">
+        {{infoNode.description}}
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile [colspan]="1" style="width: 100%">
+      <div style="height: 100%; width: 95%">
+        <button mat-icon-button color="warn" aria-label="Delete node" (click)="deleteNode()">
+          <mat-icon>delete</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" aria-label="Rename node" (click)="editNode()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+</mat-card>
