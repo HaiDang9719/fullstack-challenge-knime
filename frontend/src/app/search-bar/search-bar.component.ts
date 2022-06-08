@@ -61,7 +61,7 @@ export class SearchBarComponent implements OnInit {
   private _filter(name: string): Promise<InfoNode[]> {
     return new Promise(resolve => {
       const filterValue = name.toLowerCase();
-      const filteredResult = this.optionNodes.filter(option => option.name.toLowerCase().includes(filterValue) || option.tag.toLowerCase().includes(filterValue));
+      const filteredResult = this.optionNodes.filter(option => option.name.toLowerCase().includes(filterValue) || option.tag.split(',').includes(name));
       // resolve(filteredResult);
       this.searchNodeService.searchNodeByValue(name).subscribe((res: any) => {
         resolve(res)
@@ -80,8 +80,8 @@ export class SearchBarComponent implements OnInit {
     this.searchValue = option;
     const filterValue = option.toLowerCase();
     if (this.optionTags.includes(option)) {
-      this.filteredOptions$.next( this.optionNodes.filter(optNode => optNode.tag.toLowerCase().includes(filterValue)));
-      this.filteredOptions = this.optionNodes.filter(optNode => optNode.tag.toLowerCase().includes(filterValue));
+      this.filteredOptions$.next( this.optionNodes.filter(optNode => optNode.tag.split(',').includes(option)));
+      this.filteredOptions = this.optionNodes.filter(optNode => optNode.tag.split(',').includes(option));
     } else {
       this.filteredOptions$.next( this.optionNodes.filter(optNode => optNode.name.toLowerCase().includes(filterValue)));
       this.filteredOptions = this.optionNodes.filter(optNode => optNode.name.toLowerCase().includes(filterValue));
