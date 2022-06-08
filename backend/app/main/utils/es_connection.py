@@ -263,61 +263,7 @@ class ESConnection(object):
         except Exception as ex:
             print(str(ex))
 
-    
-    def get_record_by_userKey(self, userKey, es_index):
-        try:
-            if not self._conn.indices.exists(es_index):
-                self._conn.indices.create(index=es_index)
-                print('Created Index {}.'.format(es_index))
-            query = {
-                "query": {
-                "match_phrase": {
-                  "userKey": userKey
-                }
-            }
-            }
-            s = Search(using=self._conn, index=es_index, doc_type=self._doc_type)
-            s.update_from_dict(query)
-            result = []
-            for hit in s.scan():
-                return_obj = hit.to_dict()
-                return_obj['record_id'] = hit.meta.id
-                result.append(return_obj)
-            return result
 
-        except Exception as ex:
-            print(str(ex))
-            print('Wrong in get record by userKey')
-    
-    
-    def get_record_by_userKey_and_inferenceMode_and_ModelID(self, userKey, inferenceMode, es_index, activeModelID):
-        try:
-            if not self._conn.indices.exists(es_index):
-                self._conn.indices.create(index=es_index)
-                print('Created Index {}.'.format(es_index))
-            query = {
-                "query": {
-                    "bool": {
-                        "must": 
-                            [
-                                {"match_phrase": {"userKey":  userKey}},
-                                {"match_phrase": {"inferenceMode":  inferenceMode}},
-                                {"match_phrase": {"baseModelID":  activeModelID}}
-                            ]
-                        }
-                 }
-            }
-            s = Search(using=self._conn, index=es_index, doc_type=self._doc_type)
-            s.update_from_dict(query)
-            result = []
-            for hit in s.scan():
-                return_obj = hit.to_dict()
-                return_obj['record_id'] = hit.meta.id
-                result.append(return_obj)
-            return result
-        except Exception as ex:
-            print(str(ex))
-            print('Wrong in get record by userKey')
 
 
     def get_record_by_id(self, record_id):
